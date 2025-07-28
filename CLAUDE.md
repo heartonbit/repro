@@ -28,7 +28,8 @@ project_name/
 │   └── evaluation.py      # Model evaluation
 ├── utils/
 │   ├── __init__.py
-│   └── metrics.py         # Performance metrics
+│   ├── metrics.py         # Performance metrics
+│   └── resume.py          # Pipeline resumption utilities
 └── config/
     ├── __init__.py
     └── settings.py        # Configuration management
@@ -48,10 +49,13 @@ project_name/
 - Download datasets: `make download-data`
 - Preprocess data: `make preprocess-data`
 - Validate data integrity: `make validate-data`
+- Resume data pipeline: `make resume-data` (resumes from last successful step)
 
 ### Model Training
 - Train models: `make train`
 - Full training pipeline: `make train-all`
+- Resume training: `make resume-train` (resumes from last checkpoint)
+- Resume full pipeline: `make resume-all` (resumes entire data + training pipeline)
 
 ### Docker Operations
 - Build containers: `make build`
@@ -79,3 +83,24 @@ Claude Code will analyze the existing codebase to identify:
 - Robust error handling and recovery mechanisms
 - Comprehensive logging and monitoring
 - Data validation and caching strategies
+- **Pipeline Resumption**: Automatic checkpoint creation and resume capabilities for interrupted workflows
+
+## Resumable Pipeline Features
+
+### State Tracking
+- Pipeline state files stored in `.pipeline_state/` directory
+- Step completion status with timestamps and checksums
+- Error logging with detailed failure information
+- Automatic backup of intermediate results
+
+### Resume Logic
+- **Data Pipeline Resume**: Detects completed data processing steps (download, preprocessing, validation)
+- **Training Resume**: Automatically finds latest model checkpoint and continues training
+- **Full Pipeline Resume**: Seamlessly resumes from any interruption point in the complete workflow
+- **Smart Recovery**: Validates existing artifacts before resuming to ensure data integrity
+
+### Implementation Details
+- State persistence using JSON format with atomic writes
+- Configurable checkpoint intervals for long-running operations
+- Graceful handling of SIGINT/SIGTERM signals for clean shutdowns
+- Rollback capabilities for corrupted intermediate states
